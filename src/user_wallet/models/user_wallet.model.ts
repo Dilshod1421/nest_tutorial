@@ -1,48 +1,41 @@
-import {
-  BelongsTo,
-  Column,
-  DataType,
-  ForeignKey,
-  HasMany,
-  Model,
-  Table,
-} from 'sequelize-typescript';
-import { User } from 'src/users/models/user.model';
-import { Cart } from '../../cart/models/cart.model';
-import { Order } from '../../orders/models/order.model';
+import { Column, DataType, Table, Model, BelongsTo, HasMany, PrimaryKey, ForeignKey, HasOne } from "sequelize-typescript";
+import { User } from "../../users/models/user.model";
+import { Cart } from "../../cart/models/cart.model";
+import { Order } from "../../orders/models/order.model";
 
 interface UserWalletAttr {
-  userId: number;
-  wallet: number;
+    user_id: number;
+    wallet: number;
+
+
 }
-
-@Table({ tableName: 'user-wallet' })
+@Table({tableName:"user_wallet"})
 export class UserWallet extends Model<UserWallet, UserWalletAttr> {
-  @Column({
-    type: DataType.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
-  })
-  id: number;
 
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
-  wallet: number;
+    @Column({
+        type:DataType.BIGINT,
+        autoIncrement: true,
+        primaryKey: true,
+    })
+    id: number;
 
-  @ForeignKey(() => User)
-  @Column({
-    type: DataType.INTEGER,
-  })
-  userId: number;
+    @ForeignKey(()=>User)
+    @Column({
+        type:DataType.BIGINT
+    })
+    user_id: number;
 
-  @BelongsTo(() => User)
-  user: User;
+    @Column({
+        type:DataType.BIGINT
+    })
+    wallet: number;
 
-  @HasMany(() => Cart)
-  cart: Cart[];
+    @BelongsTo(()=> User)
+    user: User;
 
-  @HasMany(() => Order)
-  order: Order[];
+    @HasOne(()=> Cart)
+    cart: Cart;
+
+    @HasMany(()=> Order)
+    orders: Order[];
 }

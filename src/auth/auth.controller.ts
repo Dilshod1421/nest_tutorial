@@ -1,42 +1,31 @@
-import { Controller, Post, Body, HttpCode, Res, HttpStatus, Get, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, HttpCode, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LoginDto } from './dto/login-user.dto';
+import { CreateAuthDto } from './dto/create-auth.dto';
+import { UpdateAuthDto } from './dto/update-auth.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateUserDto } from '../users/dto/create-user.dto';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { Response } from 'express';
-import { User } from 'src/users/models/user.model';
-import { CookieGetter } from 'src/decorators/cookieGetter.decorator';
+import { LoginDto } from './dto/login-auth.dto';
+import {ApiOperation, ApiResponse, ApiTags} from '@nestjs/swagger'
 
-@ApiTags('Authentication')
+
+@ApiTags('Auth bo`limi')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) { }
+  constructor(private readonly authService: AuthService) {}
 
-  @ApiOperation({ summary: 'Login User' })
+  // @ApiOperation({summary: 'registratsiya'})
+  // @Post('registration')
+  // @UseInterceptors(FileInterceptor('image'))
+  // create(@Body() createUserDto: CreateUserDto, @Res({ passthrough: true}) res: Response, @UploadedFile() image?: any) {
+  //   return this.authService.registration(createUserDto, image);
+  // }
+  
+  @ApiOperation({summary: 'login'})
   @HttpCode(200)
   @Post('/login')
-  login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) res: Response) {
-    return this.authService.login(loginDto, res);
+  login(@Body() loginDto: LoginDto  ){
+    return this.authService.login(loginDto)
   }
 
-  @ApiOperation({ summary: 'Register User' })
-  @Post('/register')
-  registration(
-    @Body() createUserDto: CreateUserDto,
-    @Res({ passthrough: true }) res: Response,
-  ) {
-    return this.authService.registration(createUserDto, res);
-  }
-
-  @ApiOperation({ summary: 'Logout User' })
-  @ApiResponse({ status: 200, type: User })
-  @HttpCode(HttpStatus.OK)
-  @Post('/logout')
-  logout(
-    @CookieGetter('refresh_token') refreshToken: string,
-    @Res({ passthrough: true }) res: Response,
-  ) {
-    return this.authService.logout(refreshToken, res);
-  }
-
+  
 }

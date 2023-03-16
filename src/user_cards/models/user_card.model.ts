@@ -1,76 +1,78 @@
-import {
-  BelongsTo,
-  Column,
-  DataType,
-  ForeignKey,
-  Model,
-  Table,
-} from 'sequelize-typescript';
-import { User } from 'src/users/models/user.model';
+import { Column, DataType, Table, Model, ForeignKey, BelongsTo, HasOne } from "sequelize-typescript";
+import { User } from "../../users/models/user.model";
+import { Cart } from "../../cart/models/cart.model";
 
 interface UserCardAttr {
-  userId: number;
-  name: string;
-  phone: string;
-  number: string;
-  year: number;
-  month: number;
-  is_active: boolean;
-  is_main: boolean;
+    user_id: number;
+    name: string;
+    phone: string;
+    number: string;
+    year: number;
+    month: number;
+    is_active?: boolean;
+    is_main?: boolean;
 }
 
-@Table({ tableName: 'user-card' })
+@Table({tableName: 'user_cards'})
 export class UserCard extends Model<UserCard, UserCardAttr> {
-  @Column({
-    type: DataType.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
-  })
-  id: number;
 
-  @Column({
-    type: DataType.STRING,
-  })
-  name: string;
+    @Column({
+        type:DataType.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+    })
+    id: number;
 
-  @Column({
-    type: DataType.STRING,
-  })
-  phone: string;
+    @ForeignKey(()=> User)
+    @Column({
+        type:DataType.INTEGER,
+    })
+    user_id: number;
 
-  @Column({
-    type: DataType.STRING,
-  })
-  number: string;
+    @Column({
+        type:DataType.STRING
+    })
+    name:string;
 
-  @Column({
-    type: DataType.INTEGER,
-  })
-  year: number;
+    @Column({
+        type:DataType.STRING
+    })
+    phone:string;
 
-  @Column({
-    type: DataType.INTEGER,
-  })
-  month: number;
+    @Column({
+        type:DataType.STRING,
+        allowNull: false
+    })
+    number:string;
+    
+    @Column({
+        type:DataType.BIGINT,
+        allowNull: false
+    })
+    year:number;
 
-  @Column({
-    type: DataType.BOOLEAN,
-    defaultValue: false,
-  })
-  is_active: boolean;
+    @Column({
+        type:DataType.SMALLINT,
+        allowNull: false
+    })
+    month:number;
 
-  @Column({
-    type: DataType.BOOLEAN,
-    defaultValue: false,
-  })
-  is_main: boolean;
+    @Column({
+        type:DataType.BOOLEAN,
+        defaultValue: false
+    })
+    is_active:boolean;
 
-  @ForeignKey(() => User)
-  @Column({
-    type: DataType.INTEGER,
-  })
-  userId: number;
+    @Column({
+        type:DataType.BOOLEAN,
+        defaultValue: false
+    })
+    is_main:boolean;
 
-  @BelongsTo(() => User)
-  user: User;
+    @BelongsTo(()=> User)
+    user: User;
+
+    @HasOne(()=> Cart)
+    cart: Cart;
+
 }

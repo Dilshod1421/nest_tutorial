@@ -1,26 +1,31 @@
 import { Injectable } from '@nestjs/common';
 import { CreateStadiumTimeDto } from './dto/create-stadium_time.dto';
 import { UpdateStadiumTimeDto } from './dto/update-stadium_time.dto';
+import { StadiumTime } from './models/stadium_time.model';
+import { InjectModel } from '@nestjs/sequelize';
 
 @Injectable()
 export class StadiumTimesService {
-  create(createStadiumTimeDto: CreateStadiumTimeDto) {
-    return 'This action adds a new stadiumTime';
+
+  constructor(@InjectModel(StadiumTime) private stadiumTimeRepo: typeof StadiumTime){}
+
+  async create(createStadiumTimeDto: CreateStadiumTimeDto) {
+    return await this.stadiumTimeRepo.create(createStadiumTimeDto);
   }
 
-  findAll() {
-    return `This action returns all stadiumTimes`;
+  async findAll() {
+    return await this.stadiumTimeRepo.findAll({include:{all:true}});
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} stadiumTime`;
+  async findOne(id: number) {
+    return await this.stadiumTimeRepo.findOne({where: {id}, include: {all:true}});
   }
 
-  update(id: number, updateStadiumTimeDto: UpdateStadiumTimeDto) {
-    return `This action updates a #${id} stadiumTime`;
+  async update(id: number, updateStadiumTimeDto: UpdateStadiumTimeDto) {
+    return await this.stadiumTimeRepo.update(updateStadiumTimeDto, {where: {id}});
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} stadiumTime`;
+  async remove(id: number) {
+    return this.stadiumTimeRepo.destroy({where: {id}});
   }
 }

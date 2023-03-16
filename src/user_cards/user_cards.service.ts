@@ -1,39 +1,31 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
-import { UserCard } from './models/user_card.model';
-import { CreateCartDto } from '../cart/dto/create-cart.dto';
+import { CreateUserCardDto } from './dto/create-user_card.dto';
 import { UpdateUserCardDto } from './dto/update-user_card.dto';
+import { UserCard } from './models/user_card.model';
+import { InjectModel } from '@nestjs/sequelize';
 
 @Injectable()
-export class UserCardService {
-  constructor(@InjectModel(UserCard) private userCardRepo: typeof UserCard) {}
-
-  async createUserCard(createCartDto: CreateCartDto) {
-    const newUserCard = await this.userCardRepo.create(createCartDto);
-    return newUserCard;
+export class UserCardsService {
+  constructor(@InjectModel(UserCard) private userCardRepo: typeof UserCard){}
+  
+  async create(createUserCardDto: CreateUserCardDto) {
+    return await this.userCardRepo.create(createUserCardDto);
   }
 
-  async getAllUserCards() {
-    const result = await this.userCardRepo.findAll({
-      include: { all: true },
-    });
-    return result;
+  async findAll() {
+    return await this.userCardRepo.findAll({include: {all:true}});
   }
 
-  async getUserCardById(id: number) {
-    const result = await this.userCardRepo.findByPk(id);
-    return result;
+  async findOne(id: number) {
+    return await this.userCardRepo.findOne({where: {id}, include: {all:true}});
   }
 
-  async updateUserCard(id: number, updateUserCardDto: UpdateUserCardDto) {
-    const result = await this.userCardRepo.update(updateUserCardDto, {
-      where: { id },
-    });
-    return result;
+  async update(id: number, updateUserCardDto: UpdateUserCardDto) {
+    let update = this.userCardRepo.update(updateUserCardDto, {where: {id}, returning: true})
+    return update;
   }
 
-  async deleteUserCard(id: number): Promise<number> {
-    const result = await this.userCardRepo.destroy({ where: { id } });
-    return result;
+  async remove(id: number) {
+    return await this.userCardRepo.destroy({where: {id}});
   }
 }

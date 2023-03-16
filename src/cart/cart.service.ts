@@ -1,26 +1,30 @@
 import { Injectable } from '@nestjs/common';
 import { CreateCartDto } from './dto/create-cart.dto';
 import { UpdateCartDto } from './dto/update-cart.dto';
+import { Cart } from './models/cart.model';
+import { InjectModel } from '@nestjs/sequelize';
 
 @Injectable()
 export class CartService {
-  create(createCartDto: CreateCartDto) {
-    return 'This action adds a new cart';
+  constructor(@InjectModel(Cart) private cartRepo: typeof Cart){}
+
+  async create(createCartDto: CreateCartDto) {
+    return await this.cartRepo.create(createCartDto);
   }
 
-  findAll() {
-    return `This action returns all cart`;
+  async findAll() {
+    return this.cartRepo.findAll({include: {all:true}});
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} cart`;
+  async findOne(id: number) {
+    return this.cartRepo.findOne({where: {id}, include: {all:true}});
   }
 
-  update(id: number, updateCartDto: UpdateCartDto) {
-    return `This action updates a #${id} cart`;
+  async update(id: number, updateCartDto: UpdateCartDto) {
+    return this.cartRepo.update(updateCartDto, {where: {id}});
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} cart`;
+  async remove(id: number) {
+    return this.cartRepo.destroy({where: {id}});
   }
 }

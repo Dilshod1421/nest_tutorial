@@ -1,52 +1,42 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  Delete,
-  Put,
-} from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
 import { DistrictService } from './district.service';
 import { CreateDistrictDto } from './dto/create-district.dto';
 import { UpdateDistrictDto } from './dto/update-district.dto';
+import {ApiOperation, ApiResponse, ApiTags} from '@nestjs/swagger'
 
-@ApiTags('District')
+
+@ApiTags('District lar bo`limi')
 @Controller('district')
 export class DistrictController {
   constructor(private readonly districtService: DistrictService) {}
 
-  @ApiOperation({ summary: 'Create a district' })
+  @ApiOperation({summary: 'District yaratish'})
   @Post()
-  createComfort(@Body() createDistrictDto: CreateDistrictDto) {
-    return this.districtService.createDistrict(createDistrictDto);
+  create(@Body() createDistrictDto: CreateDistrictDto) {
+    return this.districtService.create(createDistrictDto);
   }
 
-  @ApiOperation({ summary: 'Get all district' })
-  @Get()
-  getAllComforts() {
-    return this.districtService.getAllDistricts();
+  @ApiOperation({summary: 'Districtlarni ko`rish'})
+  @Get('all')
+  findAll() {
+    return this.districtService.findAll();
   }
 
-  @ApiOperation({ summary: 'Get district' })
+  @ApiOperation({summary: 'BItta Districtni ko`rish'})
   @Get(':id')
-  getComfortById(@Param('id') id: string) {
-    return this.districtService.getDistrictById(+id);
+  findOne(@Param('id') id: string) {
+    return this.districtService.findOne(+id);
   }
 
-  @ApiOperation({ summary: 'Update district' })
+  @ApiOperation({summary: 'BItta Districtni o`zgartirish'})
   @Put(':id')
-  async updateComfort(
-    @Param('id') id: number,
-    @Body() updateDistrictDto: UpdateDistrictDto,
-  ) {
-    return await this.districtService.updateDistrict(+id, updateDistrictDto);
+  update(@Param('id') id: string, @Body() updateDistrictDto: UpdateDistrictDto) {
+    return this.districtService.update(+id, updateDistrictDto);
   }
 
-  @ApiOperation({ summary: 'Delete user' })
+  @ApiOperation({summary: 'BItta Districtni o`chirish'})
   @Delete(':id')
-  async deleteComfort(@Param('id') id: number): Promise<number> {
-    return await this.districtService.deleteDistrict(id);
+  remove(@Param('id') id: string) {
+    return this.districtService.remove(+id);
   }
 }

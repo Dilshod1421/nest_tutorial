@@ -1,6 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { PartialType } from '@nestjs/mapped-types';
+import { CreateComfortDto } from './create-comfort.dto';
 
-export class UpdateComfortDto {
-  @ApiProperty({ example: 'Yaxshi' })
-  readonly name?: string;
-}
+export class UpdateComfortDto extends PartialType(CreateComfortDto) {}

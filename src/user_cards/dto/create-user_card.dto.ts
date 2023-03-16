@@ -1,28 +1,39 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty } from 'class-validator';
+import { ApiProperty } from "@nestjs/swagger";
+import { IsNotEmpty, IsString, IsDate, IsEmail, IsStrongPassword , isPhoneNumber, IsDateString, IsInt} from "class-validator";
 
 export class CreateUserCardDto {
-  @ApiProperty({ example: '1' })
-  @IsNotEmpty()
-  readonly userId: number;
 
-  @ApiProperty({ example: 'Uzcard' })
-  @IsNotEmpty()
-  readonly name: string;
+    @ApiProperty({example: '1', description: "foydalanuvchi ID si"})
+    @IsNotEmpty()
+    @IsInt()
+    user_id: number;
 
-  @ApiProperty({ example: '+998807018023' })
-  @IsNotEmpty()
-  readonly phone: string;
+    @ApiProperty({example: 'Fakhriddin', description: "foydalanuvchi ismi"})
+    @IsNotEmpty()
+    @IsString()
+    name: string;
 
-  @ApiProperty({ example: '+990901290391' })
-  @IsNotEmpty()
-  readonly number: string;
+    @ApiProperty({example: '+998901112233', description: "foydalanuvchi telefon raqami"})
+    @IsNotEmpty()
+    @IsString()
+    phone: string;
 
-  @ApiProperty({ example: 17 })
-  @IsNotEmpty()
-  readonly year: number;
+    @ApiProperty({example: '8600 1234 5678 9000', description: "foydalanuvchi kartasi raqami"})
+    @IsNotEmpty()
+    @IsString()
+    number: string;
 
-  @ApiProperty({ example: 7 })
-  @IsNotEmpty()
-  readonly month: number;
+    @ApiProperty({example: '""2024""', description: "foydalanuvchi kartasi amal qilish yili"})
+    @IsNotEmpty()
+    @IsInt()
+    year: number;
+
+    @ApiProperty({example: '03', description: "foydalanuvchi kartasi amal qilish oyi"})
+    @IsNotEmpty()
+    @IsInt()
+    month: number;
+    
+    is_active?: boolean;
+    is_main?: boolean;
+
 }

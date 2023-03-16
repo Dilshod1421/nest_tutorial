@@ -1,52 +1,41 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  Delete,
-  Put,
-} from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
+import { UserCardsService } from './user_cards.service';
 import { CreateUserCardDto } from './dto/create-user_card.dto';
-import { UserCardService } from './user_cards.service';
 import { UpdateUserCardDto } from './dto/update-user_card.dto';
+import {ApiOperation, ApiResponse, ApiTags} from '@nestjs/swagger'
 
-@ApiTags('User Cards')
+@ApiTags('User-cards bo`limi')
 @Controller('user-cards')
-export class UserCardController {
-  constructor(private readonly userCardService: UserCardService) {}
+export class UserCardsController {
+  constructor(private readonly userCardsService: UserCardsService) {}
 
-  @ApiOperation({ summary: 'Create a user-cards' })
+  @ApiOperation({summary: 'User-card yaratish'})
   @Post()
-  createComfort(@Body() createUserCardDto: CreateUserCardDto) {
-    return this.userCardService.createUserCard(createUserCardDto);
+  create(@Body() createUserCardDto: CreateUserCardDto) {
+    return this.userCardsService.create(createUserCardDto);
   }
 
-  @ApiOperation({ summary: 'Get all user-cards' })
-  @Get()
-  getAllComforts() {
-    return this.userCardService.getAllUserCards();
+  @ApiOperation({summary: 'User-card larni olish'})
+  @Get('all')
+  findAll() {
+    return this.userCardsService.findAll();
   }
 
-  @ApiOperation({ summary: 'Get user-cards' })
+  @ApiOperation({summary: 'User-card ni olish'})
   @Get(':id')
-  getComfortById(@Param('id') id: string) {
-    return this.userCardService.getUserCardById(+id);
+  findOne(@Param('id') id: string) {
+    return this.userCardsService.findOne(+id);
   }
 
-  @ApiOperation({ summary: 'Update user-cards' })
+  @ApiOperation({summary: 'User-card ni yangilash'})
   @Put(':id')
-  async updateComfort(
-    @Param('id') id: number,
-    @Body() updateUserCardDto: UpdateUserCardDto,
-  ) {
-    return await this.userCardService.updateUserCard(+id, updateUserCardDto);
+  update(@Param('id') id: string, @Body() updateUserCardDto: UpdateUserCardDto) {
+    return this.userCardsService.update(+id, updateUserCardDto);
   }
 
-  @ApiOperation({ summary: 'Delete user' })
+  @ApiOperation({summary: 'User-card ni o`chirish'})
   @Delete(':id')
-  async deleteComfort(@Param('id') id: number): Promise<number> {
-    return await this.userCardService.deleteUserCard(id);
+  remove(@Param('id') id: string) {
+    return this.userCardsService.remove(+id);
   }
 }

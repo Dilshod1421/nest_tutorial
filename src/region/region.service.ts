@@ -1,37 +1,31 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
-import { Region } from './models/region.model';
 import { CreateRegionDto } from './dto/create-region.dto';
-import { UpdateComfortDto } from '../comfort/dto/update-comfort.dto';
+import { UpdateRegionDto } from './dto/update-region.dto';
+import { Region } from './models/region.model';
+import { InjectModel } from '@nestjs/sequelize';
 
 @Injectable()
 export class RegionService {
-  constructor(@InjectModel(Region) private regionRepo: typeof Region) {}
 
-  async createRegion(createRegionDto: CreateRegionDto) {
-    const newRegion = await this.regionRepo.create(createRegionDto);
-    return newRegion;
+  constructor(@InjectModel(Region) private regionRepo: typeof Region){}
+  
+  async create(createRegionDto: CreateRegionDto) {
+    return await this.regionRepo.create(createRegionDto);
   }
 
-  async getAllRegions() {
-    const region = await this.regionRepo.findAll({ include: { all: true } });
-    return region.sort((a, b) => a.id - b.id);
+  async findAll() {
+    return await this.regionRepo.findAll({include: {all:true}});
   }
 
-  async getRegionById(id: number) {
-    const region = await this.regionRepo.findByPk(id);
-    return region;
+  async findOne(id: number) {
+    return await this.regionRepo.findOne({where:{id}, include: {all: true}});
   }
 
-  async updateRegion(id: number, updateComfortDto: UpdateComfortDto) {
-    const Region = await this.regionRepo.update(updateComfortDto, {
-      where: { id },
-    });
-    return Region;
+  async update(id: number, updateRegionDto: UpdateRegionDto) {
+    return await this.regionRepo.update(updateRegionDto, {where: {id}});
   }
 
-  async deleteRegion(id: number): Promise<number> {
-    const result = await this.regionRepo.destroy({ where: { id } });
-    return result;
+  async remove(id: number) {
+    return await this.regionRepo.destroy({where: {id}});
   }
 }

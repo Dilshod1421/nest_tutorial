@@ -1,8 +1,9 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty } from 'class-validator';
+import { ApiProperty } from "@nestjs/swagger";
+import { IsNotEmpty, IsString, IsDate, IsEmail, IsStrongPassword , isPhoneNumber, IsDateString, IsInt} from "class-validator";
 
 export class CreateComfortDto {
-  @ApiProperty({ example: 'Yaxshi' })
-  @IsNotEmpty()
-  readonly name: string;
+    @ApiProperty({example: 'dush', description: "qulaylik nomini"})
+    @IsNotEmpty()
+    @IsString()
+    name: string;
 }

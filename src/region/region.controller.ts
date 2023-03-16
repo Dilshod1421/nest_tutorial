@@ -1,52 +1,42 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  Delete,
-  Put,
-} from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
 import { RegionService } from './region.service';
 import { CreateRegionDto } from './dto/create-region.dto';
 import { UpdateRegionDto } from './dto/update-region.dto';
+import {ApiOperation, ApiResponse, ApiTags} from '@nestjs/swagger'
 
-@ApiTags('Region')
+
+@ApiTags('Region lar bo`limi')
 @Controller('region')
 export class RegionController {
   constructor(private readonly regionService: RegionService) {}
 
-  @ApiOperation({ summary: 'Create a region' })
+  @ApiOperation({summary: 'Shahar yaratish'})
   @Post()
-  createComfort(@Body() createRegionDto: CreateRegionDto) {
-    return this.regionService.createRegion(createRegionDto);
+  create(@Body() createRegionDto: CreateRegionDto) {
+    return this.regionService.create(createRegionDto);
   }
 
-  @ApiOperation({ summary: 'Get all regions' })
-  @Get()
-  getAllComforts() {
-    return this.regionService.getAllRegions();
+  @ApiOperation({summary: 'Shaharlarni ko`rish'})
+  @Get("all")
+  findAll() {
+    return this.regionService.findAll();
   }
-
-  @ApiOperation({ summary: 'Get region' })
+  
+  @ApiOperation({summary: 'Bitta Shaharni ko`rish'})
   @Get(':id')
-  getComfortById(@Param('id') id: string) {
-    return this.regionService.getRegionById(+id);
+  findOne(@Param('id') id: string) {
+    return this.regionService.findOne(+id);
   }
-
-  @ApiOperation({ summary: 'Update region' })
+  
+  @ApiOperation({summary: 'Bitta Shaharni o`zgartirish'})
   @Put(':id')
-  async updateComfort(
-    @Param('id') id: number,
-    @Body() updateRegionDto: UpdateRegionDto,
-  ) {
-    return await this.regionService.updateRegion(+id, updateRegionDto);
+  update(@Param('id') id: string, @Body() updateRegionDto: UpdateRegionDto) {
+    return this.regionService.update(+id, updateRegionDto);
   }
-
-  @ApiOperation({ summary: 'Delete user' })
+  
+  @ApiOperation({summary: 'Bitta Region(tuman)ni o`chirish'})
   @Delete(':id')
-  async deleteComfort(@Param('id') id: number): Promise<number> {
-    return await this.regionService.deleteRegion(id);
+  remove(@Param('id') id: string) {
+    return this.regionService.remove(+id);
   }
 }

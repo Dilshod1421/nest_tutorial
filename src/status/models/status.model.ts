@@ -1,29 +1,30 @@
-import {
-  BelongsTo,
-  Column,
-  DataType,
-  ForeignKey,
-  HasMany,
-  Model,
-  Table,
-} from 'sequelize-typescript';
+import { Column, DataType, HasMany, HasOne, Model, Table } from "sequelize-typescript";
+import { Cart } from "../../cart/models/cart.model";
+import { Order } from "../../orders/models/order.model";
 
-interface StatusAttr {
-  name: string;
-  description: string;
+interface StatusAttr{
+    name: string;
 }
 
-@Table({ tableName: 'status' })
-export class Status extends Model<Status, StatusAttr> {
-  @Column({ type: DataType.INTEGER, autoIncrement: true, primaryKey: true })
-  id: number;
+@Table({tableName: 'status'})
+export class Status extends Model<Status, StatusAttr>{
+    
+    @Column({
+        type:DataType.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+    })
+    id: number;
 
-  @Column({ type: DataType.STRING, allowNull: false })
-  name: string;
+    @Column({
+        type:DataType.STRING,
+        allowNull:false
+    })
+    name:string;
 
-  @Column({ type: DataType.STRING, allowNull: false })
-  descriptions: string;
+    @HasMany(()=>Cart)
+    carts: Cart[]; 
 
-  // @HasMany(() => Stadium)
-  // stadium: Stadium[];
+    @HasMany(()=>Order)
+    orders: Order[]; 
 }

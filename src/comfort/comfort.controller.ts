@@ -1,52 +1,41 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  Delete,
-  Put,
-} from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
 import { ComfortService } from './comfort.service';
 import { CreateComfortDto } from './dto/create-comfort.dto';
 import { UpdateComfortDto } from './dto/update-comfort.dto';
+import {ApiOperation, ApiResponse, ApiTags} from '@nestjs/swagger'
 
-@ApiTags('Comfort')
+
+@ApiTags('Comfort lar bo`limi')
 @Controller('comfort')
 export class ComfortController {
   constructor(private readonly comfortService: ComfortService) {}
 
-  @ApiOperation({ summary: 'Create a comfort' })
+  @ApiOperation({summary: 'Comfort yaratish'})
   @Post()
-  createComfort(@Body() createComfortDto: CreateComfortDto) {
-    return this.comfortService.createComfort(createComfortDto);
+  create(@Body() createComfortDto: CreateComfortDto) {
+    return this.comfortService.create(createComfortDto);
   }
 
-  @ApiOperation({ summary: 'Get all comfort' })
-  @Get()
-  getAllComforts() {
-    return this.comfortService.getAllComforts();
+  @ApiOperation({summary: 'Comfortlarni olish'})
+  @Get('all')
+  findAll() {
+    return this.comfortService.findAll();
   }
 
-  @ApiOperation({ summary: 'Get comfort' })
+  @ApiOperation({summary: 'BItta Comfortni olish'})
   @Get(':id')
-  getComfortById(@Param('id') id: string) {
-    return this.comfortService.getComfortById(+id);
+  findOne(@Param('id') id: string) {
+    return this.comfortService.findOne(+id);
   }
-
-  @ApiOperation({ summary: 'Update comfort' })
+  @ApiOperation({summary: 'BItta Comfortni o`zgartirish'})
   @Put(':id')
-  async updateComfort(
-    @Param('id') id: number,
-    @Body() updateComfortDto: UpdateComfortDto,
-  ) {
-    return await this.comfortService.updateComfort(+id, updateComfortDto);
+  update(@Param('id') id: string, @Body() updateComfortDto: UpdateComfortDto) {
+    return this.comfortService.update(+id, updateComfortDto);
   }
-
-  @ApiOperation({ summary: 'Delete user' })
+  
+  @ApiOperation({summary: 'BItta Comfortni o`chirish'})
   @Delete(':id')
-  async deleteComfort(@Param('id') id: number): Promise<number> {
-    return await this.comfortService.deleteComfort(id);
+  remove(@Param('id') id: string) {
+    return this.comfortService.remove(+id);
   }
 }

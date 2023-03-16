@@ -1,41 +1,40 @@
-import {
-  BelongsTo,
-  Column,
-  DataType,
-  ForeignKey,
-  Model,
-  Table,
-} from 'sequelize-typescript';
+import {Column, Table, DataType, Model, BelongsToMany, ForeignKey, BelongsTo, HasMany} from "sequelize-typescript"
+import { Stadium } from "../../stadiums/models/stadium.model";
 
-interface CategoriesAttr {
-  name: string;
-  parentId: number;
+
+interface CategoryAttr{
+    name: string;
 }
 
-@Table({ tableName: 'categories' })
-export class Category extends Model<Category, CategoriesAttr> {
-  @Column({
-    type: DataType.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
-  })
-  id: number;
 
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
-  name: string;
+@Table({tableName: 'category', createdAt:false, updatedAt: false})
+export class Category extends Model<Category, CategoryAttr> {
+    @Column({
+        type:DataType.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+    })
+    id: number;
 
-  @ForeignKey(() => Category)
-  @Column({
-    type: DataType.INTEGER,
-  })
-  parentId: number;
+    @ForeignKey(()=> Category)
+    @Column({
+        type:DataType.INTEGER,
+        defaultValue: null
+    })
+    parent_id: number;
 
-  @BelongsTo(() => Category)
-  parentCategory: Category;
+    @Column({
+        type:DataType.STRING,
+        allowNull:false
+    })
+    name:string;
 
-  // @HasMany(() => Stadiums)
-  // userWallet: Stadiums[];
+    @HasMany(()=> Category)
+    subCategories: Category;
+
+    @HasMany(()=> Stadium)
+    stadiums: Stadium[]
+
+    
+
 }

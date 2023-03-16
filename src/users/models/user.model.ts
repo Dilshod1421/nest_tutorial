@@ -1,76 +1,122 @@
-import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
-import { UserWallet } from '../../user_wallet/models/user_wallet.model';
-import { Stadium } from '../../stadiums/models/stadium.model';
-import { UserCard } from '../../user_cards/models/user_card.model';
-import { Comments } from '../../comments/models/comment.model';
+import { Column, DataType, Table, Model, BelongsTo, HasMany, HasOne } from "sequelize-typescript";
+import { Comment } from "../../comments/models/comment.model";
+import { Stadium } from "../../stadiums/models/stadium.model";
+import { UserCard } from "../../user_cards/models/user_card.model";
+import { UserWallet } from "../../user_wallet/models/user_wallet.model";
+import { Order } from "../../orders/models/order.model";
 
 interface UserAttr {
-  first_name: string;
-  last_name: string;
-  username: string;
-  hashed_password: string;
-  telegram_link: string;
-  email: string;
-  phone: string;
-  activation_link: string;
-  user_photo: string;
-  birthday: string;
-  hashed_refresh_token: string;
+    first_name: string;
+    last_name: string;
+    username: string;
+    hashed_password: string;
+    telegram_link: string;
+    email: string;
+    phone: string;
+    birthday: Date;
+    // user_photo: string;
+    is_owner: boolean;
+    is_active: boolean;
+    hashed_refresh_token: string;
 }
 
-@Table({ tableName: 'users' })
-export class User extends Model<User, UserAttr> {
-  @Column({ type: DataType.INTEGER, autoIncrement: true, primaryKey: true })
-  id: number;
+@Table({tableName: 'users'})
+export class User extends Model<User, UserAttr>{
 
-  @Column({ type: DataType.STRING, allowNull: false })
-  first_name: string;
+    @Column({
+        type:DataType.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+    })
+    id: number;
 
-  @Column({ type: DataType.STRING, allowNull: false })
-  last_name: string;
+    @Column({
+        type:DataType.STRING,
+        // allowNull: false,
+    })
+    first_name: string;
 
-  @Column({ type: DataType.STRING, allowNull: false })
-  username: string;
+    @Column({
+        type:DataType.STRING,
+    })
+    last_name: string;
 
-  @Column({ type: DataType.STRING, allowNull: false })
-  hashed_password: string;
+    @Column({
+        type:DataType.STRING,
+        // allowNull: false
+    })
+    username: string;
 
-  @Column({ type: DataType.STRING })
-  telegram_link: string;
+    @Column({
+        type:DataType.STRING,
+    })
+    hashed_password: string;
 
-  @Column({ type: DataType.STRING, allowNull: false })
-  email: string;
+    @Column({
+        type:DataType.STRING,
+    })
+    hashed_refresh_token: string;
 
-  @Column({ type: DataType.STRING, allowNull: false })
-  phone: string;
+    @Column({
+        type:DataType.STRING,
+    })
+    telegram_link: string;
 
-  @Column({ type: DataType.STRING })
-  user_photo: string;
+    @Column({
+        type:DataType.STRING,
+        allowNull: false,
+        unique: true
+    })
+    email: string;
 
-  @Column({ type: DataType.STRING })
-  birthday: string;
+    @Column({
+        type:DataType.STRING,
+        // allowNull: false
+    })
+    phone: string;
 
-  @Column({ type: DataType.BOOLEAN, defaultValue: false })
-  is_owner: boolean;
+    // @Column({
+    //     type:DataType.STRING,
+    // })
+    // user_photo: string;
 
-  @Column({ type: DataType.BOOLEAN, defaultValue: false })
-  is_active: boolean;
+    @Column({
+        type:DataType.DATE,
+        // allowNull:false
+    })
+    birthday: Date;
 
-  @Column({ type: DataType.STRING })
-  hashed_refresh_token: string;
+    @Column({
+        type:DataType.BOOLEAN,
+        defaultValue: false
+    })
+    is_owner: boolean;
 
-  @Column({ type: DataType.STRING })
-  activation_link: string;
+    @Column({
+        type:DataType.BOOLEAN,
+        defaultValue: false
+    })
+    is_active: boolean;
 
-  @HasMany(() => Stadium)
-  stadium: Stadium[];
+    @Column({
+        type:DataType.STRING
+    })
+    activation_link: string;
 
-  @HasMany(() => UserWallet)
-  userWallet: UserWallet[];
+    @HasMany(()=>UserCard)
+    cards: UserCard;
 
-  @HasMany(() => UserCard)
-  userCard: UserCard[];
+    
+    @HasOne(()=>UserWallet)
+    wallet: UserWallet
+    
+    @HasMany(()=>Stadium)
+    stadiums: Stadium[];
 
-  @HasMany(() => Comments)
-  comments: Comments[];
+    @HasMany(()=>Comment)
+    comments: Stadium[];
+
+    @HasMany(()=>Order)
+    orders: Order[];
+
 }

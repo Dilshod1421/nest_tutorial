@@ -1,9 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { PartialType } from '@nestjs/mapped-types';
+import { CreateCategoryDto } from './create-category.dto';
 
-export class UpdateCategoryDto {
-  @ApiProperty({ example: 'Futbol' })
-  readonly name?: string;
-
-  @ApiProperty({ example: '1' })
-  readonly parentId?: number;
-}
+export class UpdateCategoryDto extends PartialType(CreateCategoryDto) {}

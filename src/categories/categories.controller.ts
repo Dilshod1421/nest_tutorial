@@ -1,52 +1,42 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  Delete,
-  Put,
-} from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
-import { CategoryService } from './categories.service';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
+import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import {ApiOperation, ApiResponse, ApiTags} from '@nestjs/swagger'
 
-@ApiTags('Category')
-@Controller('category')
-export class CategoryController {
-  constructor(private readonly categoryService: CategoryService) {}
 
-  @ApiOperation({ summary: 'Create a category' })
+@ApiTags('Categoriya lar bo`limi')
+@Controller('categories')
+export class CategoriesController {
+  constructor(private readonly categoriesService: CategoriesService) {}
+
+  @ApiOperation({summary: 'Categoriya yaratish'})
   @Post()
-  createComfort(@Body() createCategoryDto: CreateCategoryDto) {
-    return this.categoryService.createCategory(createCategoryDto);
+  create(@Body() createCategoryDto: CreateCategoryDto) {
+    return this.categoriesService.create(createCategoryDto);
   }
 
-  @ApiOperation({ summary: 'Get all category' })
-  @Get()
-  getAllComforts() {
-    return this.categoryService.getAllCategorys();
+  @ApiOperation({summary: 'Categoriyalarni olish'})
+  @Get('all')
+  findAll() {
+    return this.categoriesService.findAll();
   }
 
-  @ApiOperation({ summary: 'Get category' })
+  @ApiOperation({summary: 'Bitta Categoriyani olish'})
   @Get(':id')
-  getComfortById(@Param('id') id: string) {
-    return this.categoryService.getCategoryById(+id);
+  findOne(@Param('id') id: string) {
+    return this.categoriesService.findOne(+id);
   }
 
-  @ApiOperation({ summary: 'Update category' })
+  @ApiOperation({summary: 'Bitta Categoriyani o`zgartirish'})
   @Put(':id')
-  async updateComfort(
-    @Param('id') id: number,
-    @Body() updateCategoryDto: UpdateCategoryDto,
-  ) {
-    return await this.categoryService.updateCategory(+id, updateCategoryDto);
+  update(@Param('id') id: string, @Body() updateCategoryDto: UpdateCategoryDto) {
+    return this.categoriesService.update(+id, updateCategoryDto);
   }
 
-  @ApiOperation({ summary: 'Delete user' })
+  @ApiOperation({summary: 'Bitta Categoriyani o`chirish'})
   @Delete(':id')
-  async deleteComfort(@Param('id') id: number): Promise<number> {
-    return await this.categoryService.deleteCategory(id);
+  remove(@Param('id') id: string) {
+    return this.categoriesService.remove(+id);
   }
 }

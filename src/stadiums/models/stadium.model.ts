@@ -1,116 +1,137 @@
-import {
-  BelongsTo,
-  Column,
-  DataType,
-  ForeignKey,
-  Model,
-  Table,
-} from 'sequelize-typescript';
-import { User } from 'src/users/models/user.model';
-import { Region } from '../../region/models/region.model';
-import { Category } from '../../categories/models/category.model';
-import { District } from '../../district/models/district.model';
+import { Column, DataType, Table, Model, BelongsTo, HasMany, HasOne, ForeignKey, AllowNull, BelongsToMany } from "sequelize-typescript";
+import { Category } from "../../categories/models/category.model";
+import { Comfort } from "../../comfort/models/comfort.model";
+import { District } from "../../district/models/district.model";
+import { Region } from "../../region/models/region.model";
+import { User } from "../../users/models/user.model";
+import { ComfortStadium } from "./stadium-comfort.model";
+import { Media } from "../../media/models/media.model";
+import { Comment } from "../../comments/models/comment.model";
+import { StadiumTime } from "../../stadium_times/models/stadium_time.model";
 
 interface StadiumAttr {
-  category_id: number;
-  owner_id: number;
-  contactWith: string;
-  name: string;
-  volume: number;
-  address: string;
-  region_id: number;
-  district: number;
-  location: string;
-  buildAt: Date;
-  startTime: string;
-  endTime: string;
+    category_id: number;
+    owner_id: number;
+    contact_with: string;
+    name: string;
+    volume: string;
+    address: string;
+    region_id: number;
+    district_id: number;
+    location: string;
+    build_at?: Date;
+    start_time: string;
+    end_time: string;
 }
 
-@Table({ tableName: 'stadiums' })
-export class Stadium extends Model<Stadium, StadiumAttr> {
-  @Column({
-    type: DataType.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
-  })
-  id: number;
+@Table({tableName: 'stadiums'})
+export class Stadium extends Model<Stadium, StadiumAttr>{
+    
+    @Column({
+        type:DataType.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+    })
+    id: number;
 
-  @Column({
-    type: DataType.STRING,
-  })
-  contact_with: string;
+    @ForeignKey(()=> Category)
+    @Column({
+        type:DataType.INTEGER
+    })
+    category_id: number;
 
-  @Column({
-    type: DataType.STRING,
-  })
-  name: string;
 
-  @Column({
-    type: DataType.STRING,
-  })
-  volume: string;
+    @ForeignKey(()=> User)
+    @Column({
+        type:DataType.INTEGER
+    })
+    owner_id: number;
 
-  @Column({
-    type: DataType.STRING,
-  })
-  address: string;
+    @Column({
+        type:DataType.STRING,
+        allowNull:false
+    })
+    contact_with: string;
 
-  @Column({
-    type: DataType.STRING,
-  })
-  location: string;
+    @Column({
+        type:DataType.STRING,
+        allowNull:false
+    })
+    name: string;
 
-  @Column({
-    type: DataType.DATE,
-  })
-  buildAt: Date;
+    @Column({
+        type:DataType.STRING,
+        allowNull:false
+    })
+    volume: string;
 
-  @Column({
-    type: DataType.STRING,
-  })
-  start_time: string;
+    
+    @Column({
+        type:DataType.STRING,
+        allowNull:false
+    })
+    address: string;
 
-  @Column({
-    type: DataType.STRING,
-  })
-  end_time: string;
+    @ForeignKey(()=> Region)
+    @Column({
+        type:DataType.INTEGER
+    })
+    region_id: number;
 
-  // CATEGORY
-  @ForeignKey(() => Category)
-  @Column({
-    type: DataType.INTEGER,
-  })
-  category_id: number;
-  @BelongsTo(() => Category)
-  category: Category[];
+    @ForeignKey(()=> District)
+    @Column({
+        type:DataType.INTEGER
+    })
+    district_id: number;
 
-  // USER
-  @ForeignKey(() => User)
-  @Column({
-    type: DataType.INTEGER,
-  })
-  user_id: number;
-  @BelongsTo(() => User)
-  user: User[];
+    @Column({
+        type:DataType.STRING,
+        allowNull:false
+    })
+    location: string;
 
-  // REGION
-  @ForeignKey(() => Region)
-  @Column({
-    type: DataType.INTEGER,
-  })
-  region_id: number;
-  @BelongsTo(() => Region)
-  region: Region[];
+    @Column({
+        type:DataType.DATE,
+        defaultValue: Date.now()
+    })
+    buildAt: Date;
 
-  // DISTRICT
-  @ForeignKey(() => District)
-  @Column({
-    type: DataType.INTEGER,
-  })
-  district_id: number;
-  @BelongsTo(() => District)
-  district: District[];
+    @Column({
+        type:DataType.STRING,
+        allowNull: false
+    })
+    start_time: string;
 
-  // @HasMany(() => Stadium)
-  // stadium: Stadium[];
+    @Column({
+        type:DataType.STRING,
+        allowNull: false
+    })
+    end_time: string;
+
+    @BelongsTo(()=> Category)
+    category: Category;
+
+    @BelongsTo(()=> User)
+    owner: User;
+
+    @BelongsTo(()=> Region)
+    region: Region;
+
+    @BelongsTo(()=> District)
+    district: District;
+
+    @BelongsToMany(()=> Comfort, ()=> ComfortStadium)
+    comforts: Comfort[];
+
+    @HasMany(()=> Media)
+    media: Media[];
+
+    @HasMany(()=> Comment)
+    comments: Comment[];
+
+    @HasMany(()=> StadiumTime)
+    stadium_times: StadiumTime[];
+
+
+
 }
