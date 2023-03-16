@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -13,13 +14,16 @@ import { LoginDto } from './dto/login-user.dto';
 import { User } from '../users/models/user.model';
 import { Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
+import { MailService } from 'src/mail/mail.service';
+import { InjectModel } from '@nestjs/sequelize';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UsersService,
     private readonly jwtService: JwtService,
-  ) {}
+    private readonly mailService: MailService
+  ) { }
 
   async registration(userDto: CreateUserDto, res: Response) {
     const userIsExist = await this.userService.getUserByUsername(
@@ -50,6 +54,7 @@ export class AuthService {
       maxAge: 15 * 24 * 60 * 60 * 1000,
       httpOnly: true,
     });
+    await this.mailService.sendUserConfirmation(updatedUser[1][0]);
 
     const response = {
       message: 'USER REGISTERED',
@@ -63,7 +68,7 @@ export class AuthService {
     const { email, password } = loginDto;
     const user = await this.userService.getUserByEmail(email);
     if (!user) {
-      throw new HttpException(`Bunday mavjud emas`, HttpStatus.BAD_REQUEST);
+      throw new HttpException(`Bunday user mavjud emas`, HttpStatus.BAD_REQUEST);
     }
     const isMatchPass = await bcrypt.compare(password, user.hashed_password);
     if (!isMatchPass) {
@@ -91,8 +96,6 @@ export class AuthService {
     return response;
   }
 
-  async logout(){}
-
   private async getToken(user: User) {
     const payload = {
       id: user.id,
@@ -112,16 +115,22 @@ export class AuthService {
     return { access_token: accessToken, refresh_token: refreshToken };
   }
 
-  private async validateUser(loginDto: LoginDto) {
-    const user = await this.userService.getUserByEmail(loginDto.email);
-
-    if (
-      !user ||
-      !(await bcrypt.compare(loginDto.password, user.hashed_password))
-    ) {
-      throw new UnauthorizedException('Email yoki password XATO !!!');
+  async logout(refreshToken: string, res: Response) {
+    const userData = await this.jwtService.verify(refreshToken, {
+      secret: process.env.REFRESH_TOKEN_KEY,
+    });
+    if (!userData) {
+      throw new ForbiddenException('User not found');
     }
-
-    return user;
+    const updatedUser = await this.userService.updateUser(userData.id, {
+      hashed_refresh_token: refreshToken,
+    });
+    res.clearCookie('refresh_token');
+    const response = {
+      message: 'User logged out successfully',
+      user: updatedUser[1][0],
+    };
+    return response;
   }
+
 }

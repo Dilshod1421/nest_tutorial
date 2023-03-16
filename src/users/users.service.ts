@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { User } from './models/user.model';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -7,10 +7,11 @@ import { ActivateUserDto } from './dto/activate-user.dto';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User) private userRepo: typeof User) {}
+  constructor(@InjectModel(User) private userRepo: typeof User) { }
 
   async createUser(createUserDto: CreateUserDto, hashed_password: string) {
-    const newUser = await this.userRepo.create({...createUserDto,
+    const newUser = await this.userRepo.create({
+      ...createUserDto,
       hashed_password,
     });
     return newUser;
@@ -55,23 +56,20 @@ export class UsersService {
     return result;
   }
 
-  async activateUser(activateUserDto: ActivateUserDto) {
-    const user = await this.userRepo.findByPk(activateUserDto.userId);
-    if (!user) {
-      throw new HttpException('Foydalanuvchi  topilmadi', HttpStatus.NOT_FOUND);
+  async activate(link: string) {
+    if (!link) {
+      throw new BadRequestException('Activation link not found!');
     }
-    user.is_active = true;
-    await user.save();
-    return user;
+    const updatedUser = await this.userRepo.update(
+      { is_active: true },
+      { where: { activation_link: link, is_active: false }, returning: true }
+    )
+    const response = {
+      message: 'User activated successfully',
+      user: updatedUser,
+    };
+    return response;
   }
 
-  async deactivateUser(activateUserDto: ActivateUserDto) {
-    const user = await this.userRepo.findByPk(activateUserDto.userId);
-    if (!user) {
-      throw new HttpException('Foydalanuvchi  topilmadi', HttpStatus.NOT_FOUND);
-    }
-    user.is_active = false;
-    await user.save();
-    return user;
-  }
+  
 }

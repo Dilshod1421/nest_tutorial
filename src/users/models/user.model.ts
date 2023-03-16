@@ -12,6 +12,7 @@ interface UserAttr {
   telegram_link: string;
   email: string;
   phone: string;
+  activation_link: string;
   user_photo: string;
   birthday: string;
   hashed_refresh_token: string;

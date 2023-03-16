@@ -1,14 +1,16 @@
-import { Controller, Post, Body, HttpCode, Res } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, Res, HttpStatus, Get, Param } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login-user.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Response } from 'express';
+import { User } from 'src/users/models/user.model';
+import { CookieGetter } from 'src/decorators/cookieGetter.decorator';
 
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
   @ApiOperation({ summary: 'Login User' })
   @HttpCode(200)
@@ -25,4 +27,16 @@ export class AuthController {
   ) {
     return this.authService.registration(createUserDto, res);
   }
+
+  @ApiOperation({ summary: 'Logout User' })
+  @ApiResponse({ status: 200, type: User })
+  @HttpCode(HttpStatus.OK)
+  @Post('/logout')
+  logout(
+    @CookieGetter('refresh_token') refreshToken: string,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    return this.authService.logout(refreshToken, res);
+  }
+
 }

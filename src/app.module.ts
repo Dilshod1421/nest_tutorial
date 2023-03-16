@@ -34,6 +34,7 @@ import { Status } from './status/models/status.model';
 import { Cart } from './cart/models/cart.model';
 import { Order } from './orders/models/order.model';
 import { AuthModule } from './auth/auth.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -86,6 +87,7 @@ import { AuthModule } from './auth/auth.module';
     CartModule,
     OrdersModule,
     AuthModule,
+    MailModule,
   ],
   controllers: [],
   providers: [],

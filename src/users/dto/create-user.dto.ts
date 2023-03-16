@@ -31,9 +31,6 @@ export class CreateUserDto {
   @IsNotEmpty()
   readonly confirm_password: string;
 
-  @ApiProperty({ example: '@johndoe' })
-  readonly telegram_link: string;
-
   @ApiProperty({ example: 'john@gmail.com' })
   @IsNotEmpty()
   @IsString()
