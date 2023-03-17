@@ -3,11 +3,11 @@ import { MailService } from './mail.service';
 import { ConfigService } from '@nestjs/config';
 import { join } from 'path';
 import { MailerModule } from '@nestjs-modules/mailer';
-import {HandlebarsAdapter} from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter'
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter'
 
 @Module({
   imports: [MailerModule.forRootAsync({
-    useFactory: async (config: ConfigService)=>({
+    useFactory: async (config: ConfigService) => ({
       transport: {
         host: config.get<string>('MAILER_HOST'),
         secure: false,
@@ -18,7 +18,6 @@ import {HandlebarsAdapter} from '@nestjs-modules/mailer/dist/adapters/handlebars
       },
       defaults: {
         from: `"Stadium" <${config.get('MAILER_HOST')}>`,
-
       },
       template: {
         dir: join(__dirname, 'templates'),
@@ -34,4 +33,4 @@ import {HandlebarsAdapter} from '@nestjs-modules/mailer/dist/adapters/handlebars
   providers: [MailService],
   exports: [MailService]
 })
-export class MailModule {}
+export class MailModule { }

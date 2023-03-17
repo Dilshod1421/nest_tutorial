@@ -3,11 +3,12 @@ import { UserWalletService } from './user_wallet.service';
 import { UserWalletController } from './user_wallet.controller';
 import { UserWallet } from './models/user_wallet.model';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { AuthModule } from '../auth/auth.module';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
-  imports:[SequelizeModule.forFeature([UserWallet]), AuthModule],
+  imports: [SequelizeModule.forFeature([UserWallet]), UsersModule],
   controllers: [UserWalletController],
-  providers: [UserWalletService]
+  providers: [UserWalletService],
+  exports: [UserWalletService]
 })
-export class UserWalletModule {}
+export class UserWalletModule { }

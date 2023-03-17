@@ -1,4 +1,4 @@
-import { Column, DataType, Table, Model, BelongsTo, HasMany, HasOne } from "sequelize-typescript";
+import { Column, DataType, Table, Model, HasMany, HasOne } from "sequelize-typescript";
 import { Comment } from "../../comments/models/comment.model";
 import { Stadium } from "../../stadiums/models/stadium.model";
 import { UserCard } from "../../user_cards/models/user_card.model";
@@ -14,109 +14,98 @@ interface UserAttr {
     email: string;
     phone: string;
     birthday: Date;
-    // user_photo: string;
     is_owner: boolean;
     is_active: boolean;
     hashed_refresh_token: string;
-}
+};
 
-@Table({tableName: 'users'})
+@Table({ tableName: 'users' })
 export class User extends Model<User, UserAttr>{
 
     @Column({
-        type:DataType.INTEGER,
+        type: DataType.INTEGER,
         autoIncrement: true,
         primaryKey: true,
     })
     id: number;
 
     @Column({
-        type:DataType.STRING,
-        // allowNull: false,
+        type: DataType.STRING,
     })
     first_name: string;
 
     @Column({
-        type:DataType.STRING,
+        type: DataType.STRING,
     })
     last_name: string;
 
     @Column({
-        type:DataType.STRING,
-        // allowNull: false
+        type: DataType.STRING,
     })
     username: string;
 
     @Column({
-        type:DataType.STRING,
+        type: DataType.STRING,
     })
     hashed_password: string;
 
     @Column({
-        type:DataType.STRING,
+        type: DataType.STRING,
     })
     hashed_refresh_token: string;
 
     @Column({
-        type:DataType.STRING,
+        type: DataType.STRING,
     })
     telegram_link: string;
 
     @Column({
-        type:DataType.STRING,
+        type: DataType.STRING,
         allowNull: false,
         unique: true
     })
     email: string;
 
     @Column({
-        type:DataType.STRING,
-        // allowNull: false
+        type: DataType.STRING,
     })
     phone: string;
 
-    // @Column({
-    //     type:DataType.STRING,
-    // })
-    // user_photo: string;
-
     @Column({
-        type:DataType.DATE,
-        // allowNull:false
+        type: DataType.DATE,
     })
     birthday: Date;
 
     @Column({
-        type:DataType.BOOLEAN,
+        type: DataType.BOOLEAN,
         defaultValue: false
     })
     is_owner: boolean;
 
     @Column({
-        type:DataType.BOOLEAN,
+        type: DataType.BOOLEAN,
         defaultValue: false
     })
     is_active: boolean;
 
     @Column({
-        type:DataType.STRING
+        type: DataType.STRING
     })
     activation_link: string;
 
-    @HasMany(()=>UserCard)
+    @HasMany(() => UserCard)
     cards: UserCard;
 
-    
-    @HasOne(()=>UserWallet)
+    @HasOne(() => UserWallet)
     wallet: UserWallet
-    
-    @HasMany(()=>Stadium)
+
+    @HasMany(() => Stadium)
     stadiums: Stadium[];
 
-    @HasMany(()=>Comment)
+    @HasMany(() => Comment)
     comments: Stadium[];
 
-    @HasMany(()=>Order)
+    @HasMany(() => Order)
     orders: Order[];
 
 }

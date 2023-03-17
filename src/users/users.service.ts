@@ -196,17 +196,23 @@ export class UsersService {
   }
 
 
-  async remove(id: number) {
-    return await this.userRepo.destroy({ where: { id } });
-  }
-
-
   async getUserByEmail(email: string) {
     const user = await this.userRepo.findOne({
       where: { email },
       include: { all: true }
     });
     return user;
+  }
+
+
+  async remove(id: number) {
+    return await this.userRepo.destroy({ where: { id } });
+  }
+
+
+  async updateUser(updateUserDto: UpdateUserDto, id: number) {
+    const user = await this.userRepo.update({ ...updateUserDto }, { where: { id }, returning: true });
+    return user[1][0];
   }
 
 }

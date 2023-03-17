@@ -32,7 +32,6 @@ import { Cart } from './cart/models/cart.model';
 import { Status } from './status/models/status.model';
 import { Admin } from './admin/models/admin.model';
 import { Order } from './orders/models/order.model';
-import { AuthModule } from './auth/auth.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { resolve } from 'path';
 import { MailModule } from './mail/mail.module';
@@ -87,7 +86,6 @@ import { MailModule } from './mail/mail.module';
         AdminModule,
         StatusModule,
         OrdersModule,
-        AuthModule,
         MailModule],
     controllers: [],
     providers: [],
