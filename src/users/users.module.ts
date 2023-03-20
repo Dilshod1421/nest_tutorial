@@ -6,11 +6,16 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { FilesModule } from '../files/files.module';
 import { JwtModule } from '@nestjs/jwt';
 import { MailModule } from '../mail/mail.module';
+import { OtpModule } from 'src/otp/otp.module';
+import { Otp } from 'src/otp/models/otp.model';
+import { BotModule } from 'src/bot/bot.module';
 
 @Module({
-  imports: [SequelizeModule.forFeature([User]),
+  imports: [SequelizeModule.forFeature([User, Otp]),
     FilesModule,
     MailModule,
+    OtpModule,
+    BotModule,
   JwtModule.register({
     secret: 'MySecretKey',
     signOptions: {

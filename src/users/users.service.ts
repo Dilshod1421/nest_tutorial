@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './models/user.model';
@@ -10,6 +10,14 @@ import { JwtService } from '@nestjs/jwt';
 import { Response } from "express"
 import { LoginUserDto } from './dto/login-user.dto';
 import { MailService } from '../mail/mail.service';
+import * as otpGenerator from 'otp-generator';
+import { PhoneUserDto } from './dto/phone-user.dto';
+import { BotService } from 'src/bot/bot.service';
+import { Otp } from 'src/otp/models/otp.model';
+import { Op } from 'sequelize';
+import { AddMinutesToDate } from 'src/helpers/addMinutes';
+import { v4 } from 'uuid';
+import { encode } from 'src/helpers/crypto';
 export interface Tokens {
   access_token: string;
   refresh_token: string
@@ -20,9 +28,12 @@ export interface Tokens {
 export class UsersService {
   constructor(
     @InjectModel(User) private userRepo: typeof User,
+    @InjectModel(Otp) private otpRepo: typeof Otp,
     private readonly fileService: FilesService,
     private readonly jwtService: JwtService,
-    private readonly mailService: MailService) { }
+    private readonly mailService: MailService,
+    private readonly botService: BotService
+  ) { }
 
   async registration(createUserDto: CreateUserDto, res: Response) {
     const user = await this.userRepo.findOne({
@@ -142,7 +153,7 @@ export class UsersService {
       { hashed_refresh_token: hashed_refresh_token },
       { where: { id: user.id }, returning: true }
     );
-    return this.writingCookie(tokens, updatedUser[1][0], res, 'token updated');
+    return this.writingCookie(tokens, updatedUser[1][0], res, 'Token updated');
   }
 
 
@@ -176,6 +187,31 @@ export class UsersService {
       tokens
     };
     return response;
+  }
+
+
+  async newOtp(phoneUserDto: PhoneUserDto) {
+    console.log('salom');
+    
+    const phone_number = phoneUserDto.phone;
+    const otp = otpGenerator.generate(4, {
+      upperCaseAlphabets: false,
+      lowerCaseAlphabets: false,
+      specialChars: false
+    });
+    const is_send = await this.botService.sendOTP(phone_number, otp);
+    if (!is_send) {
+      throw new HttpException("Avval botdan ro'yxatdan o'ting", HttpStatus.BAD_REQUEST);
+    };
+    const now = new Date();
+    const expiration_time = AddMinutesToDate(now, 5);
+    await this.otpRepo.destroy({ where: { [Op.and]: [{ check: phone_number }, { verified: false }] } });
+    const new_otp = await this.otpRepo.create({ id: v4(), otp, expiration_time, check: phone_number });
+    const details = {
+      timestamp: now, check: phone_number, success: true, message: "OTP send to user", otp_id: new_otp.id
+    };
+    const encoded = await encode(JSON.stringify(details));
+    return { status: 'Success', Details: encoded };
   }
 
 

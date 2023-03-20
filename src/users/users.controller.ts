@@ -8,6 +8,7 @@ import { Response } from 'express';
 import { LoginUserDto } from './dto/login-user.dto';
 import { CookieGetter } from '../decorators/cookieGetter.decorator';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { PhoneUserDto } from './dto/phone-user.dto';
 
 
 @ApiTags('Users')
@@ -102,6 +103,13 @@ export class UsersController {
   @Post(':id')
   updateUser(@Param('id') updateUserDto: UpdateUserDto, id: string) {
     return this.usersService.updateUser(updateUserDto, +id);
+  }
+
+
+  @ApiOperation({ summary: 'Send OTP' })
+  @Post('otp')
+  newOtp(@Body() phoneUserDto: PhoneUserDto) {
+    return this.usersService.newOtp(phoneUserDto);
   }
 
 }

@@ -35,10 +35,23 @@ import { Order } from './orders/models/order.model';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { resolve } from 'path';
 import { MailModule } from './mail/mail.module';
+import { BotModule } from './bot/bot.module';
+import { TelegrafModule } from 'nestjs-telegraf';
+import { BOT_NAME } from './app.constants';
+import { Bot } from './bot/models/bot.model';
+import { OtpModule } from './otp/otp.module';
 
 
 @Module({
     imports: [
+        TelegrafModule.forRootAsync({
+            botName: BOT_NAME,
+            useFactory: () => ({
+                token: process.env.BOT_TOKEN,
+                middlewares: [],
+                includes: [BotModule],
+            })
+        }),
         ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
         ServeStaticModule.forRoot({
             rootPath: resolve(__dirname, 'static')
@@ -66,7 +79,8 @@ import { MailModule } from './mail/mail.module';
                 Cart,
                 Status,
                 Admin,
-                Order
+                Order,
+                Bot,
             ],
             autoLoadModels: true,
             logging: true
@@ -86,7 +100,10 @@ import { MailModule } from './mail/mail.module';
         AdminModule,
         StatusModule,
         OrdersModule,
-        MailModule],
+        MailModule,
+        BotModule,
+        OtpModule,
+    ],
     controllers: [],
     providers: [],
     exports: []
