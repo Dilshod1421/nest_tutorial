@@ -17,7 +17,9 @@ import { Otp } from 'src/otp/models/otp.model';
 import { Op } from 'sequelize';
 import { AddMinutesToDate } from 'src/helpers/addMinutes';
 import { v4 } from 'uuid';
-import { encode } from 'src/helpers/crypto';
+import { encode, decode, dates } from 'src/helpers/crypto';
+import { VerifyOtpDto } from './dto/verifyOtp.dto';
+import { FindUserDto } from './dto/findUserDto';
 export interface Tokens {
   access_token: string;
   refresh_token: string
@@ -191,8 +193,8 @@ export class UsersService {
 
 
   async newOtp(phoneUserDto: PhoneUserDto) {
-    console.log('salom');
-    
+    console.log(phoneUserDto);
+
     const phone_number = phoneUserDto.phone;
     const otp = otpGenerator.generate(4, {
       upperCaseAlphabets: false,
@@ -212,6 +214,77 @@ export class UsersService {
     };
     const encoded = await encode(JSON.stringify(details));
     return { status: 'Success', Details: encoded };
+  }
+
+
+  async verifyOtp(verifyOtpDto: VerifyOtpDto) {
+    const { verification_key, otp, check } = verifyOtpDto;
+    const currentdate = new Date();
+    const decoded = await decode(verification_key);
+    const obj = JSON.parse(decoded);
+    const check_obj = obj.check;
+    if (check_obj != check)
+      throw new BadRequestException('OTP bu raqamga yuborilmagan');
+    const result = await this.otpRepo.findOne({ where: { id: obj.otp_id } });
+    if (result != null) {
+      if (!result.verified) {
+        if (dates.compare(result.expiration_time, currentdate)) {
+          if (otp === result.otp) {
+            const user = await this.userRepo.findOne({
+              where: { phone: check },
+            });
+            console.log(user);
+            if (user) {
+              const updatedUser = await this.userRepo.update(
+                { is_owner: true },
+                { where: { id: user.id }, returning: true },
+              );
+              await this.otpRepo.update(
+                { verified: true }, { where: { id: obj.otp_id }, returning: true }
+              )
+              const response = {
+                message: 'User updated as owner',
+                user: updatedUser[1][0],
+              };
+              return response;
+            }
+          } else {
+            throw new BadRequestException('Otp is not match');
+          }
+        } else {
+          throw new BadRequestException('Otp expired');
+        }
+      } else {
+        throw new BadRequestException('Otp already used');
+      }
+    } else {
+      throw new BadRequestException('User not found');
+    }
+  }
+
+
+  async searchUsers(findUserDto: FindUserDto) {
+    const where = {};
+    if (findUserDto.first_name) {
+      where['first_name'] = { [Op.like]: `%${findUserDto.first_name}%` };
+    };
+    if (findUserDto.last_name) {
+      where['last_name'] = { [Op.like]: `%${findUserDto.last_name}%` };
+    };
+    if (findUserDto.username) {
+      where['username'] = { [Op.like]: `%${findUserDto.username}%` };
+    };
+    if (findUserDto.email) {
+      where['email'] = { [Op.like]: `%${findUserDto.email}%` };
+    };
+    if (findUserDto.phone) {
+      where['phone'] = { [Op.like]: `%${findUserDto.phone}%` };
+    };
+    const search = await this.userRepo.findAll({ where });
+    if (!search) {
+      throw new BadRequestException('User not found!');
+    };
+    return search;
   }
 
 
@@ -250,5 +323,6 @@ export class UsersService {
     const user = await this.userRepo.update({ ...updateUserDto }, { where: { id }, returning: true });
     return user[1][0];
   }
+
 
 }

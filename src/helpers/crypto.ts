@@ -42,6 +42,7 @@ export async function decode(str: string) {
     decrypted += decipher.final();
     return decrypted;
 }
+
 export const dates = {
     compare: function (a: Date | number, b: Date | number) {
         const oneDate = a.valueOf();

@@ -9,6 +9,8 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { CookieGetter } from '../decorators/cookieGetter.decorator';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PhoneUserDto } from './dto/phone-user.dto';
+import { VerifyOtpDto } from './dto/verifyOtp.dto';
+import { FindUserDto } from './dto/findUserDto';
 
 
 @ApiTags('Users')
@@ -28,6 +30,13 @@ export class UsersController {
   @Post('signin')
   login(@Body() loginUserDto: LoginUserDto, @Res({ passthrough: true }) res: Response) {
     return this.usersService.login(loginUserDto, res);
+  }
+
+
+  @ApiOperation({ summary: 'Search users' })
+  @Post('find')
+  searchUsers(@Body() findUserDto: FindUserDto) {
+    return this.usersService.searchUsers(findUserDto);
   }
 
 
@@ -57,6 +66,19 @@ export class UsersController {
   @Get('all')
   findAll() {
     return this.usersService.findAll();
+  }
+
+  @ApiOperation({ summary: 'Send OTP' })
+  @Post('otp')
+  newOtp(@Body() phoneUserDto: PhoneUserDto) {
+    return this.usersService.newOtp(phoneUserDto);
+  }
+
+
+  @ApiOperation({ summary: 'Verify OTP' })
+  @Post('verify')
+  verifyOtp(@Body() verifyOtpDto: VerifyOtpDto) {
+    return this.usersService.verifyOtp(verifyOtpDto);
   }
 
 
@@ -105,11 +127,5 @@ export class UsersController {
     return this.usersService.updateUser(updateUserDto, +id);
   }
 
-
-  @ApiOperation({ summary: 'Send OTP' })
-  @Post('otp')
-  newOtp(@Body() phoneUserDto: PhoneUserDto) {
-    return this.usersService.newOtp(phoneUserDto);
-  }
 
 }
