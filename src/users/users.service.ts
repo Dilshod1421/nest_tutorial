@@ -73,7 +73,6 @@ export class UsersService {
     if (!user) {
       throw new BadRequestException('User not registered!!');
     };
-
     const isMatchPass = await bcrypt.compare(password, user.hashed_password);
     if (!isMatchPass) {
       throw new BadRequestException('User not registered(pass)!!');
@@ -279,6 +278,15 @@ export class UsersService {
     };
     if (findUserDto.phone) {
       where['phone'] = { [Op.like]: `%${findUserDto.phone}%` };
+    };
+    if (findUserDto.birthday_begin && findUserDto.birthday_end) {
+      where['birthday'] = { [Op.between]: [findUserDto.birthday_begin, findUserDto.birthday_end] };
+    };
+    if (findUserDto.birthday_begin) {
+      where['birthday'] = { [Op.gte]: findUserDto.birthday_begin };
+    };
+    if (findUserDto.birthday_end) {
+      where['birthday'] = { [Op.lt]: findUserDto.birthday_begin };
     };
     const search = await this.userRepo.findAll({ where });
     if (!search) {

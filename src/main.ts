@@ -1,15 +1,12 @@
-import { NestFactory } from "@nestjs/core"
-import { AppModule } from "./app.module"
-// import { ValidationPipe } from "@nestjs/common"
-// import {ValidationPipe} from './pipe/validation.pipe'
-import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger"
+import { NestFactory } from "@nestjs/core";
+import { AppModule } from "./app.module";
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import * as cookieParser from 'cookie-parser';
 
 const start = async () => {
     try {
         const app = await NestFactory.create(AppModule)
         const PORT = process.env.PORT || 3000;
-        // app.useGlobalPipes(new ValidationPipe());
         const config = new DocumentBuilder()
             .setTitle('NestJS TEST')
             .setDescription('REST API')
@@ -19,7 +16,7 @@ const start = async () => {
         const document = SwaggerModule.createDocument(app, config);
         SwaggerModule.setup('/api/docs', app, document);
         app.use(cookieParser());
-        app.setGlobalPrefix('api')
+        app.setGlobalPrefix('api');
         app.listen(PORT, () => {
             console.log(`Server is running on port ${PORT}`);
         });
